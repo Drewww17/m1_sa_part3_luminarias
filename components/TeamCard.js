@@ -1,12 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from 'next/image';
+import { getConstructorImage } from '../lib/images';
 
 export default function TeamCard({ team, index = 0 }) {
   if (!team) return null;
 
   const { Constructor, position, points, wins } = team;
   const teamName = Constructor.name;
+  const teamImage = getConstructorImage(Constructor.constructorId);
 
   // Team color mapping
   const teamColors = {
@@ -69,6 +72,19 @@ export default function TeamCard({ team, index = 0 }) {
             </motion.div>
           )}
         </div>
+
+        {/* Team Logo */}
+        {teamImage && (
+          <div className="w-20 h-20 relative mb-4">
+            <Image
+              src={teamImage}
+              alt={teamName}
+              width={80}
+              height={80}
+              className="w-full h-full object-contain"
+            />
+          </div>
+        )}
 
         {/* Team Name */}
         <h3 className="text-2xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#00D2BE] transition-colors duration-300">

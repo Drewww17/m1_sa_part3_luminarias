@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from 'next/image';
+import { getDriverImage } from '../lib/images';
 
 export default function DriverCard({ driver, index = 0 }) {
   if (!driver) return null;
@@ -8,6 +10,7 @@ export default function DriverCard({ driver, index = 0 }) {
   const { Driver, Constructors, position, points, wins } = driver;
   const teamName = Constructors[0]?.name || 'Unknown Team';
   const driverName = `${Driver.givenName} ${Driver.familyName}`;
+  const driverImage = getDriverImage(Driver.driverId);
 
   // Team color mapping
   const teamColors = {
@@ -55,6 +58,23 @@ export default function DriverCard({ driver, index = 0 }) {
             {position}
           </motion.div>
         </div>
+
+        {/* Driver Photo */}
+        {driverImage ? (
+          <div className="flex-shrink-0 w-16 h-16 rounded-full overflow-hidden border-2 border-white/20">
+            <Image
+              src={driverImage}
+              alt={driverName}
+              width={64}
+              height={64}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="flex-shrink-0 w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-white/20">
+            <span className="text-xl font-bold text-zinc-500">{Driver.code}</span>
+          </div>
+        )}
 
         {/* Driver Info */}
         <div className="flex-1 min-w-0">
