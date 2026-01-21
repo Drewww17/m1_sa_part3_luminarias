@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { getDriverImage, getConstructorImage } from "../lib/images";
 
 export default function StandingsTable({ data, type = "driver" }) {
   if (!data || data.length === 0) {
@@ -46,15 +48,21 @@ export default function StandingsTable({ data, type = "driver" }) {
             const points = item.points;
             const wins = item.wins || 0;
             
-            let name, nationality, teamName;
+            let name, nationality, teamName, itemImage, imageAlt, itemCode;
             
             if (isDriverStandings) {
               name = `${item.Driver.givenName} ${item.Driver.familyName}`;
               nationality = item.Driver.nationality;
               teamName = item.Constructors[0]?.name;
+              itemImage = getDriverImage(item.Driver.driverId);
+              imageAlt = name;
+              itemCode = item.Driver.code;
             } else {
               name = item.Constructor.name;
               nationality = item.Constructor.nationality;
+              itemImage = getConstructorImage(item.Constructor.constructorId);
+              imageAlt = name;
+              itemCode = name.substring(0, 3).toUpperCase();
             }
 
             // Position colors
@@ -85,8 +93,27 @@ export default function StandingsTable({ data, type = "driver" }) {
 
                 {/* Name */}
                 <td className="py-4 px-4">
-                  <div className="font-bold text-base group-hover:text-[#00D2BE] transition-colors">
-                    {name}
+                  <div className="flex items-center gap-3">
+                    {/* Photo */}
+                    <div className="flex-shrink-0">
+                      {itemImage ? (
+                        <Image
+                          src={itemImage}
+                          alt={imageAlt}
+                          width={40}
+                          height={40}
+                          className={isDriverStandings ? "rounded-full object-cover" : "object-contain"}
+                        />
+                      ) : (
+                        <div className={`w-10 h-10 ${isDriverStandings ? 'rounded-full' : 'rounded-lg'} bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30`}>
+                          <span className="text-xs font-bold text-[#00D2BE]">{itemCode}</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Name Text */}
+                    <div className="font-bold text-base group-hover:text-[#00D2BE] transition-colors">
+                      {name}
+                    </div>
                   </div>
                 </td>
 
