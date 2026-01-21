@@ -43,7 +43,7 @@ export default function CountdownTimer({ targetDate }) {
   if (isExpired) {
     return (
       <div className="text-center p-8 bg-zinc-900/50 rounded-2xl border border-white/10">
-        <p className="text-2xl font-bold text-[#E10600]">🏁 Race is Live!</p>
+        <p className="text-2xl font-bold text-[#00D2BE]">🏁 Race is Live!</p>
       </div>
     );
   }
@@ -60,14 +60,14 @@ export default function CountdownTimer({ targetDate }) {
       {timeUnits.map((unit, index) => (
         <motion.div
           key={unit.label}
-          className="relative bg-zinc-900/80 rounded-2xl border border-white/10 p-6 text-center overflow-hidden group hover:border-[#E10600]/50 transition-all"
+          className="relative bg-zinc-900/80 rounded-2xl border border-white/10 p-6 text-center overflow-hidden group hover:border-[#00D2BE]/50 transition-all"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: index * 0.1, duration: 0.5 }}
           whileHover={{ y: -5 }}
         >
           {/* Glow Effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#E10600]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00D2BE]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           {/* Value */}
           <motion.div
@@ -87,7 +87,7 @@ export default function CountdownTimer({ targetDate }) {
 
           {/* Animated Border */}
           <motion.div
-            className="absolute bottom-0 left-0 right-0 h-1 bg-[#E10600]"
+            className="absolute bottom-0 left-0 right-0 h-1 bg-[#00D2BE]"
             initial={{ scaleX: 0 }}
             whileHover={{ scaleX: 1 }}
             transition={{ duration: 0.3 }}

@@ -59,7 +59,7 @@ export default function StandingsTable({ data, type = "driver" }) {
 
             // Position colors
             const positionColor = 
-              position === '1' ? 'text-[#E10600]' :
+              position === '1' ? 'text-[#00D2BE]' :
               position === '2' ? 'text-zinc-300' :
               position === '3' ? 'text-orange-400' :
               'text-zinc-500';
@@ -85,7 +85,7 @@ export default function StandingsTable({ data, type = "driver" }) {
 
                 {/* Name */}
                 <td className="py-4 px-4">
-                  <div className="font-bold text-base group-hover:text-[#E10600] transition-colors">
+                  <div className="font-bold text-base group-hover:text-[#00D2BE] transition-colors">
                     {name}
                   </div>
                 </td>
@@ -109,7 +109,7 @@ export default function StandingsTable({ data, type = "driver" }) {
                 {/* Points */}
                 <td className="py-4 px-4 text-right">
                   <motion.div
-                    className="text-xl font-mono font-bold group-hover:text-[#E10600] transition-colors"
+                    className="text-xl font-mono font-bold group-hover:text-[#00D2BE] transition-colors"
                     whileHover={{ scale: 1.1 }}
                   >
                     {points}

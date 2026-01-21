@@ -28,11 +28,11 @@ export default function DriversPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#E10600] selection:text-black">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
       {/* Background Effects */}
       <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#E10600] rounded-full blur-[120px] opacity-50"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#00D2BE] rounded-full blur-[120px] opacity-50"></div>
       </div>
 
       <div className="relative z-10">
@@ -49,7 +49,7 @@ export default function DriversPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black italic uppercase mb-2 flex items-center gap-4">
-                  <span className="w-4 h-12 bg-[#E10600] rounded-sm"></span>
+                  <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Driver Standings
                 </h1>
                 <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
@@ -61,7 +61,7 @@ export default function DriversPage() {
                   onClick={() => setViewMode('cards')}
                   className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
                     viewMode === 'cards'
-                      ? 'bg-[#E10600] text-black'
+                      ? 'bg-[#00D2BE] text-black'
                       : 'bg-zinc-900 text-zinc-500 hover:text-white'
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -73,7 +73,7 @@ export default function DriversPage() {
                   onClick={() => setViewMode('table')}
                   className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
                     viewMode === 'table'
-                      ? 'bg-[#E10600] text-black'
+                      ? 'bg-[#00D2BE] text-black'
                       : 'bg-zinc-900 text-zinc-500 hover:text-white'
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -104,7 +104,7 @@ export default function DriversPage() {
                   transition={{ delay: 0.2 }}
                 >
                   <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Leader</p>
-                  <p className="text-xl font-black text-[#E10600]">
+                  <p className="text-xl font-black text-[#00D2BE]">
                     {drivers[0]?.Driver.code}
                   </p>
                 </motion.div>

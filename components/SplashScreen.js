@@ -24,7 +24,7 @@ export default function SplashScreen({ onComplete }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 bg-[#E10600] flex flex-col items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-50 bg-[#00D2BE] flex flex-col items-center justify-center overflow-hidden"
       initial={{ y: 0 }}
       animate={{ y: progress >= 100 ? "-100%" : 0 }}
       transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1] }}
