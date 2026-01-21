@@ -20,12 +20,6 @@ export default function TeamsPage() {
         setTeams(data);
       } catch (error) {
         console.error("Failed to load teams:", error);
-        // Fallback data
-        setTeams([
-          { position: "1", points: "157", wins: "5", Constructor: { constructorId: "red_bull", name: "Red Bull Racing", nationality: "Austrian" } },
-          { position: "2", points: "102", wins: "2", Constructor: { constructorId: "mercedes", name: "Mercedes", nationality: "German" } },
-          { position: "3", points: "97", wins: "1", Constructor: { constructorId: "ferrari", name: "Ferrari", nationality: "Italian" } },
-        ]);
       } finally {
         setLoading(false);
       }

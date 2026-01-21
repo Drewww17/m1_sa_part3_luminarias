@@ -20,12 +20,6 @@ export default function DriversPage() {
         setDrivers(data);
       } catch (error) {
         console.error("Failed to load drivers:", error);
-        // Fallback data
-        setDrivers([
-          { position: "1", points: "86", wins: "3", Driver: { code: "VER", givenName: "Max", familyName: "Verstappen", permanentNumber: "1", nationality: "Dutch" }, Constructors: [{ name: "Red Bull Racing" }] },
-          { position: "2", points: "71", wins: "2", Driver: { code: "PER", givenName: "Sergio", familyName: "Perez", permanentNumber: "11", nationality: "Mexican" }, Constructors: [{ name: "Red Bull Racing" }] },
-          { position: "3", points: "65", wins: "1", Driver: { code: "ALO", givenName: "Fernando", familyName: "Alonso", permanentNumber: "14", nationality: "Spanish" }, Constructors: [{ name: "Aston Martin" }] },
-        ]);
       } finally {
         setLoading(false);
       }

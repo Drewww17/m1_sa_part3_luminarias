@@ -24,21 +24,6 @@ export default function SchedulePage() {
         setNextRace(upcomingRace);
       } catch (error) {
         console.error("Failed to load schedule:", error);
-        // Fallback data
-        setRaces([
-          {
-            season: "2025",
-            round: "1",
-            raceName: "Bahrain Grand Prix",
-            date: "2025-03-02",
-            time: "15:00:00Z",
-            Circuit: {
-              circuitId: "bahrain",
-              circuitName: "Bahrain International Circuit",
-              Location: { locality: "Sakhir", country: "Bahrain" }
-            }
-          }
-        ]);
       } finally {
         setLoading(false);
       }
