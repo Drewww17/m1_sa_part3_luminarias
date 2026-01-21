@@ -23,7 +23,7 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
     <motion.div
       className={`group relative rounded-xl border overflow-hidden cursor-pointer ${
         isUpcoming
-          ? 'bg-gradient-to-br from-[#ccff00]/20 to-green-500/20 border-[#ccff00]/50'
+          ? 'bg-gradient-to-br from-[#E10600]/20 to-green-500/20 border-[#E10600]/50'
           : 'bg-zinc-900/50 border-white/10'
       }`}
       initial={{ opacity: 0, x: -20 }}
@@ -44,7 +44,7 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
       {/* Glow Effect for Upcoming Race */}
       {isUpcoming && (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ccff00]/20 to-transparent"
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-[#E10600]/20 to-transparent"
           animate={{ x: ['-100%', '100%'] }}
           transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
         />
@@ -56,7 +56,7 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
           <div>
             {isUpcoming && (
               <motion.div
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ccff00] text-black font-bold text-xs uppercase tracking-wider mb-2"
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E10600] text-black font-bold text-xs uppercase tracking-wider mb-2"
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
@@ -64,14 +64,14 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
                 Next Race
               </motion.div>
             )}
-            <h3 className="text-xl font-bold leading-tight group-hover:text-[#ccff00] transition-colors">
+            <h3 className="text-xl font-bold leading-tight group-hover:text-[#E10600] transition-colors">
               {raceName}
             </h3>
           </div>
 
           {/* Round Badge */}
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-zinc-800 border border-[#ccff00]/30 flex items-center justify-center">
-            <span className="text-sm font-bold text-[#ccff00]">
+          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-zinc-800 border border-[#E10600]/30 flex items-center justify-center">
+            <span className="text-sm font-bold text-[#E10600]">
               {race.round}
             </span>
           </div>
@@ -102,7 +102,7 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
             <p className="text-xs text-zinc-500 uppercase tracking-wider mb-0.5">
               Time
             </p>
-            <p className="text-sm font-mono font-bold text-[#ccff00]">
+            <p className="text-sm font-mono font-bold text-[#E10600]">
               {formattedTime}
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
       {/* Bottom Accent */}
       <motion.div
         className={`absolute bottom-0 left-0 right-0 h-1 ${
-          isUpcoming ? 'bg-[#ccff00]' : 'bg-zinc-700'
+          isUpcoming ? 'bg-[#E10600]' : 'bg-zinc-700'
         }`}
         initial={{ scaleX: 0 }}
         whileHover={{ scaleX: 1 }}

@@ -25,7 +25,7 @@ export default function Navbar() {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              F1<span className="text-[#ccff00]">HUB</span>
+              F1<span className="text-[#E10600]">HUB</span>
             </motion.div>
           </Link>
 
@@ -34,7 +34,7 @@ export default function Navbar() {
             {navItems.map((item, index) => (
               <Link key={item.name} href={item.href}>
                 <motion.span
-                  className="uppercase font-bold text-sm tracking-widest text-zinc-400 hover:text-[#ccff00] cursor-pointer relative"
+                  className="uppercase font-bold text-sm tracking-widest text-zinc-400 hover:text-[#E10600] cursor-pointer relative"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -42,7 +42,7 @@ export default function Navbar() {
                 >
                   {item.name}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ccff00]"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E10600]"
                     initial={{ scaleX: 0 }}
                     whileHover={{ scaleX: 1 }}
                     transition={{ duration: 0.3 }}
@@ -55,7 +55,7 @@ export default function Navbar() {
           {/* User Avatar */}
           <div className="hidden md:flex items-center">
             <motion.div
-              className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-[#ccff00] flex items-center justify-center font-bold text-sm cursor-pointer"
+              className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-[#E10600] flex items-center justify-center font-bold text-sm cursor-pointer"
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >

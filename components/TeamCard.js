@@ -58,12 +58,12 @@ export default function TeamCard({ team, index = 0 }) {
 
           {wins > 0 && (
             <motion.div
-              className="px-3 py-1 rounded-full bg-[#ccff00]/20 border border-[#ccff00]/50"
+              className="px-3 py-1 rounded-full bg-[#E10600]/20 border border-[#E10600]/50"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: index * 0.1 + 0.3 }}
             >
-              <span className="text-[#ccff00] text-xs font-bold">
+              <span className="text-[#E10600] text-xs font-bold">
                 🏆 {wins} {wins === 1 ? 'Win' : 'Wins'}
               </span>
             </motion.div>
@@ -71,7 +71,7 @@ export default function TeamCard({ team, index = 0 }) {
         </div>
 
         {/* Team Name */}
-        <h3 className="text-2xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#ccff00] transition-colors duration-300">
+        <h3 className="text-2xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#E10600] transition-colors duration-300">
           {teamName}
         </h3>
 
@@ -87,7 +87,7 @@ export default function TeamCard({ team, index = 0 }) {
               Championship Points
             </p>
             <motion.div
-              className="text-4xl font-black font-mono group-hover:text-[#ccff00] transition-colors"
+              className="text-4xl font-black font-mono group-hover:text-[#E10600] transition-colors"
               whileHover={{ scale: 1.1 }}
             >
               {points}
@@ -96,11 +96,11 @@ export default function TeamCard({ team, index = 0 }) {
 
           {/* Arrow Indicator */}
           <motion.div
-            className="w-8 h-8 rounded-full bg-[#ccff00]/10 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-[#E10600]/10 flex items-center justify-center"
             whileHover={{ x: 5 }}
           >
             <svg
-              className="w-4 h-4 text-[#ccff00]"
+              className="w-4 h-4 text-[#E10600]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

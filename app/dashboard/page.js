@@ -54,11 +54,11 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ccff00] selection:text-black">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#E10600] selection:text-black">
       {/* Background Effects */}
       <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#ccff00] rounded-full blur-[120px] opacity-50"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#E10600] rounded-full blur-[120px] opacity-50"></div>
       </div>
 
       <div className="relative z-10">
@@ -74,7 +74,7 @@ export default function DashboardPage() {
           >
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Next Race Info */}
-              <div className="lg:col-span-2 group relative bg-zinc-900/80 rounded-3xl border border-white/10 p-8 md:p-10 overflow-hidden hover:border-[#ccff00]/50 transition-all duration-500">
+              <div className="lg:col-span-2 group relative bg-zinc-900/80 rounded-3xl border border-white/10 p-8 md:p-10 overflow-hidden hover:border-[#E10600]/50 transition-all duration-500">
                 {/* Background Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10"></div>
                 <div
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="relative z-20">
                     <motion.div
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ccff00] text-black font-bold text-xs uppercase tracking-wider mb-6"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E10600] text-black font-bold text-xs uppercase tracking-wider mb-6"
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ repeat: Infinity, duration: 2 }}
                     >
@@ -104,7 +104,7 @@ export default function DashboardPage() {
                           key={i}
                           className={
                             i % 2 !== 0
-                              ? "text-transparent bg-clip-text bg-gradient-to-r from-[#ccff00] to-green-400"
+                              ? "text-transparent bg-clip-text bg-gradient-to-r from-[#E10600] to-green-400"
                               : "text-white"
                           }
                         >
@@ -123,7 +123,7 @@ export default function DashboardPage() {
                       <div className="w-px bg-white/20"></div>
                       <div>
                         <p className="text-xs uppercase tracking-widest mb-1">Date</p>
-                        <p className="text-[#ccff00] font-bold">{data.nextRace?.date}</p>
+                        <p className="text-[#E10600] font-bold">{data.nextRace?.date}</p>
                       </div>
                     </div>
                   </div>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                 ) : (
                   <>
                     <motion.div
-                      className="flex-1 bg-gradient-to-br from-[#ccff00] to-green-400 rounded-3xl p-8 text-black"
+                      className="flex-1 bg-gradient-to-br from-[#E10600] to-green-400 rounded-3xl p-8 text-black"
                       whileHover={{ scale: 1.02 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
@@ -168,7 +168,7 @@ export default function DashboardPage() {
                         </p>
                         <p className="text-2xl font-bold">2025</p>
                       </div>
-                      <div className="w-12 h-12 rounded-full border-4 border-[#ccff00] border-t-transparent animate-spin"></div>
+                      <div className="w-12 h-12 rounded-full border-4 border-[#E10600] border-t-transparent animate-spin"></div>
                     </motion.div>
                   </>
                 )}
@@ -185,7 +185,7 @@ export default function DashboardPage() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <span className="w-3 h-8 bg-[#ccff00] rounded-sm"></span>
+                <span className="w-3 h-8 bg-[#E10600] rounded-sm"></span>
                 Race Countdown
               </h2>
               <CountdownTimer targetDate={`${data.nextRace.date}T${data.nextRace.time || '00:00:00Z'}`} />
@@ -200,12 +200,12 @@ export default function DashboardPage() {
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold flex items-center gap-3">
-                <span className="w-3 h-8 bg-[#ccff00] rounded-sm"></span>
+                <span className="w-3 h-8 bg-[#E10600] rounded-sm"></span>
                 Driver Standings
               </h2>
               <a
                 href="/drivers"
-                className="text-sm text-[#ccff00] hover:underline font-bold uppercase tracking-wider"
+                className="text-sm text-[#E10600] hover:underline font-bold uppercase tracking-wider"
               >
                 View All →
               </a>
@@ -225,7 +225,7 @@ export default function DashboardPage() {
 
         {/* Footer Ticker */}
         {!loading && (
-          <div className="fixed bottom-0 w-full bg-[#ccff00] text-black py-2 overflow-hidden whitespace-nowrap z-50">
+          <div className="fixed bottom-0 w-full bg-[#E10600] text-black py-2 overflow-hidden whitespace-nowrap z-50">
             <motion.div
               className="inline-block font-bold font-mono text-sm uppercase tracking-widest"
               animate={{ x: [1000, -1000] }}

@@ -51,11 +51,11 @@ export default function SchedulePage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ccff00] selection:text-black pb-20">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#E10600] selection:text-black pb-20">
       {/* Background Effects */}
       <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#ccff00] rounded-full blur-[120px] opacity-50"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#E10600] rounded-full blur-[120px] opacity-50"></div>
       </div>
 
       <div className="relative z-10">
@@ -72,7 +72,7 @@ export default function SchedulePage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black italic uppercase mb-2 flex items-center gap-4">
-                  <span className="w-4 h-12 bg-[#ccff00] rounded-sm"></span>
+                  <span className="w-4 h-12 bg-[#E10600] rounded-sm"></span>
                   Race Calendar
                 </h1>
                 <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
@@ -86,7 +86,7 @@ export default function SchedulePage() {
                     onClick={() => setFilter(filterType)}
                     className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${
                       filter === filterType
-                        ? 'bg-[#ccff00] text-black'
+                        ? 'bg-[#E10600] text-black'
                         : 'bg-zinc-900 text-zinc-500 hover:text-white'
                     }`}
                     whileHover={{ scale: 1.05 }}
@@ -128,7 +128,7 @@ export default function SchedulePage() {
                   transition={{ delay: 0.3 }}
                 >
                   <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Upcoming</p>
-                  <p className="text-3xl font-black text-[#ccff00]">{upcomingRaces.length}</p>
+                  <p className="text-3xl font-black text-[#E10600]">{upcomingRaces.length}</p>
                 </motion.div>
 
                 <motion.div
@@ -187,12 +187,12 @@ export default function SchedulePage() {
               transition={{ duration: 0.5, delay: 0.7 }}
             >
               <h3 className="text-lg font-bold mb-4 flex items-center gap-3">
-                <span className="w-2 h-6 bg-[#ccff00] rounded-sm"></span>
+                <span className="w-2 h-6 bg-[#E10600] rounded-sm"></span>
                 Legend
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-[#ccff00] animate-pulse"></div>
+                  <div className="w-4 h-4 rounded-full bg-[#E10600] animate-pulse"></div>
                   <span className="text-zinc-400">Next Race (Highlighted)</span>
                 </div>
                 <div className="flex items-center gap-3">
