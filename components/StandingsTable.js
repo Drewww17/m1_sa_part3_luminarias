@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from 'next/image';
+import { getDriverImage, getConstructorImage } from '../lib/images';
 
 export default function StandingsTable({ data, type = "driver" }) {
   if (!data || data.length === 0) {
@@ -46,15 +48,20 @@ export default function StandingsTable({ data, type = "driver" }) {
             const points = item.points;
             const wins = item.wins || 0;
             
-            let name, nationality, teamName;
+            let name, nationality, teamName, imageSrc, imageAlt, driverId;
             
             if (isDriverStandings) {
               name = `${item.Driver.givenName} ${item.Driver.familyName}`;
               nationality = item.Driver.nationality;
               teamName = item.Constructors[0]?.name;
+              driverId = item.Driver.driverId;
+              imageSrc = getDriverImage(driverId);
+              imageAlt = name;
             } else {
               name = item.Constructor.name;
               nationality = item.Constructor.nationality;
+              imageSrc = getConstructorImage(item.Constructor.constructorId);
+              imageAlt = name;
             }
 
             // Position colors
@@ -83,10 +90,41 @@ export default function StandingsTable({ data, type = "driver" }) {
                   </motion.div>
                 </td>
 
-                {/* Name */}
+                {/* Name with Photo */}
                 <td className="py-4 px-4">
-                  <div className="font-bold text-base group-hover:text-[#00D2BE] transition-colors">
-                    {name}
+                  <div className="flex items-center gap-3">
+                    {imageSrc ? (
+                      isDriverStandings ? (
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-white/20">
+                          <Image
+                            src={imageSrc}
+                            alt={imageAlt}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex-shrink-0 w-10 h-10 relative">
+                          <Image
+                            src={imageSrc}
+                            alt={imageAlt}
+                            width={40}
+                            height={40}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      )
+                    ) : (
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-white/20">
+                        <span className="text-xs font-bold text-zinc-500">
+                          {isDriverStandings ? item.Driver.code : '?'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="font-bold text-base group-hover:text-[#00D2BE] transition-colors">
+                      {name}
+                    </div>
                   </div>
                 </td>
 
