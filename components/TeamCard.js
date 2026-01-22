@@ -67,7 +67,7 @@ export default function TeamCard({ team, index = 0 }) {
               transition={{ delay: index * 0.1 + 0.3 }}
             >
               <span className="text-[#00D2BE] text-xs font-bold">
-                🏆 {wins} {wins === 1 ? 'Win' : 'Wins'}
+                {wins} {wins === 1 ? 'Win' : 'Wins'}
               </span>
             </motion.div>
           )}
