@@ -10,6 +10,9 @@ import SeasonSelector from "../../components/SeasonSelector";
 import { getDriverStandings, getDriversList } from "../../lib/api";
 import { allZeroPoints, sortDriversAlphabetically } from "../../lib/utils";
 
+// Default fallback constructor for drivers without team info
+const UNKNOWN_CONSTRUCTOR = { constructorId: "unknown", name: "Unknown Team", nationality: "Unknown" };
+
 export default function DriversPage() {
   const [loading, setLoading] = useState(true);
   const [drivers, setDrivers] = useState([]);
@@ -43,7 +46,7 @@ export default function DriversPage() {
               familyName: driver.familyName,
               nationality: driver.nationality
             },
-            Constructors: driver.Constructor ? [driver.Constructor] : [{ constructorId: "unknown", name: "Unknown Team", nationality: "Unknown" }]
+            Constructors: driver.Constructor ? [driver.Constructor] : [UNKNOWN_CONSTRUCTOR]
           }));
           
           // Sort alphabetically when all points are zero
