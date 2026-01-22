@@ -3,8 +3,11 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { getDriverImage } from "../lib/images";
+import { useState } from "react";
 
 export default function DriverCard({ driver, index = 0 }) {
+  const [imageError, setImageError] = useState(false);
+  
   if (!driver) return null;
 
   const { Driver, Constructors, position, points, wins } = driver;
@@ -61,20 +64,20 @@ export default function DriverCard({ driver, index = 0 }) {
 
         {/* Driver Photo */}
         <div className="flex-shrink-0">
-          <Image
-            src={driverImage}
-            alt={driverName}
-            width={64}
-            height={64}
-            className="rounded-full object-cover"
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
-          />
-          <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30" style={{ display: 'none' }}>
-            <span className="text-sm font-bold text-[#00D2BE]">{Driver.code}</span>
-          </div>
+          {!imageError ? (
+            <Image
+              src={driverImage}
+              alt={driverName}
+              width={64}
+              height={64}
+              className="rounded-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30">
+              <span className="text-sm font-bold text-[#00D2BE]">{Driver.code}</span>
+            </div>
+          )}
         </div>
 
         {/* Driver Info */}
