@@ -6,26 +6,73 @@ import Navbar from "../../components/Navbar";
 import DriverCard from "../../components/DriverCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getDriverStandings } from "../../lib/api";
+import SeasonSelector from "../../components/SeasonSelector";
+import { getDriverStandings, getDriversList } from "../../lib/api";
+import { allZeroPoints, sortDriversAlphabetically } from "../../lib/utils";
+
+// Default fallback constructor for drivers without team info
+const UNKNOWN_CONSTRUCTOR = { constructorId: "unknown", name: "Unknown Team", nationality: "Unknown" };
 
 export default function DriversPage() {
   const [loading, setLoading] = useState(true);
   const [drivers, setDrivers] = useState([]);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [season, setSeason] = useState('current');
+  const [isFallbackData, setIsFallbackData] = useState(false);
 
   useEffect(() => {
     async function loadDrivers() {
+      setLoading(true);
       try {
-        const data = await getDriverStandings();
-        setDrivers(data);
+        // Try to get standings first
+        const standings = await getDriverStandings(season);
+        
+        // Check if standings are empty or all zeros
+        if (!standings || standings.length === 0) {
+          // Fallback to roster/drivers list
+          console.log(`No standings for season ${season}, fetching roster`);
+          const { drivers: rosterDrivers, isMock } = await getDriversList(season === 'current' ? '2026' : season);
+          
+          // Convert roster to standings format
+          const mappedDrivers = rosterDrivers.map((driver, index) => ({
+            position: String(index + 1),
+            points: "0",
+            wins: "0",
+            Driver: {
+              driverId: driver.driverId,
+              permanentNumber: driver.permanentNumber,
+              code: driver.code,
+              givenName: driver.givenName,
+              familyName: driver.familyName,
+              nationality: driver.nationality
+            },
+            Constructors: driver.Constructor ? [driver.Constructor] : [UNKNOWN_CONSTRUCTOR]
+          }));
+          
+          // Sort alphabetically when all points are zero
+          const sortedDrivers = sortDriversAlphabetically(mappedDrivers);
+          setDrivers(sortedDrivers);
+          setIsFallbackData(true);
+        } else {
+          // Check if all points are zero and alphabetize if needed
+          const shouldAlphabetize = allZeroPoints(standings);
+          const finalDrivers = shouldAlphabetize ? sortDriversAlphabetically(standings) : standings;
+          setDrivers(finalDrivers);
+          setIsFallbackData(false);
+        }
       } catch (error) {
         console.error("Failed to load drivers:", error);
+        setIsFallbackData(true);
       } finally {
         setLoading(false);
       }
     }
     loadDrivers();
-  }, []);
+  }, [season]);
+
+  const handleSeasonChange = (newSeason) => {
+    setSeason(newSeason);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -52,36 +99,55 @@ export default function DriversPage() {
                   <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Driver Standings
                 </h1>
-                <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
+                <p className="text-zinc-500 ml-8">FIA Formula One World Championship</p>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex gap-2 ml-8 sm:ml-0">
-                <motion.button
-                  onClick={() => setViewMode('cards')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'cards'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cards
-                </motion.button>
-                <motion.button
-                  onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Table
-                </motion.button>
+              {/* Season Selector */}
+              <div className="ml-8 sm:ml-0">
+                <SeasonSelector onSeasonChange={handleSeasonChange} defaultSeason={season} />
               </div>
+            </div>
+
+            {/* Fallback Data Banner */}
+            {isFallbackData && (
+              <motion.div
+                className="mb-6 ml-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-sm text-yellow-200">
+                  <span className="font-bold">⚠️ Note:</span> Official standings for season {season} are not available — showing roster/demo data.
+                </p>
+              </motion.div>
+            )}
+
+            {/* View Toggle */}
+            <div className="flex gap-2 ml-8 mb-6">
+              <motion.button
+                onClick={() => setViewMode('cards')}
+                className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                  viewMode === 'cards'
+                    ? 'bg-[#00D2BE] text-black'
+                    : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Cards
+              </motion.button>
+              <motion.button
+                onClick={() => setViewMode('table')}
+                className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                  viewMode === 'table'
+                    ? 'bg-[#00D2BE] text-black'
+                    : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Table
+              </motion.button>
             </div>
 
             {/* Stats Overview */}
