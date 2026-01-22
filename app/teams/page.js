@@ -31,18 +31,21 @@ export default function TeamsPage() {
     async function loadTeams() {
       setLoading(true);
       try {
-        const standingsData = await getConstructorStandings(season);
+        const { standings: standingsData, isMock } = await getConstructorStandings(season);
         
-        // Check if standings are empty or all zero points
-        if (standingsData.length === 0 || allZeroPoints(standingsData)) {
-          // For constructors, we'll use the mock data that's already returned
-          // but mark it as fallback
+        // Check if we're using mock data or if standings are empty or all zero points
+        if (isMock || standingsData.length === 0 || allZeroPoints(standingsData)) {
+          // For constructors, we use the mock data that's already returned
           const teamsToDisplay = standingsData.length > 0 ? standingsData : [];
           
           // Sort alphabetically when all points are zero
           if (teamsToDisplay.length > 0) {
-            const sortedTeams = sortConstructorsAlphabetically(teamsToDisplay);
-            setTeams(sortedTeams);
+            if (allZeroPoints(teamsToDisplay)) {
+              const sortedTeams = sortConstructorsAlphabetically(teamsToDisplay);
+              setTeams(sortedTeams);
+            } else {
+              setTeams(teamsToDisplay);
+            }
           } else {
             setTeams([]);
           }

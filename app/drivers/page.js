@@ -32,17 +32,27 @@ export default function DriversPage() {
       setLoading(true);
       try {
         // First, try to get official standings
-        const standingsData = await getDriverStandings(season);
+        const { standings: standingsData, isMock } = await getDriverStandings(season);
         
-        // Check if standings are empty or all zero points
-        if (standingsData.length === 0 || allZeroPoints(standingsData)) {
-          // Fallback to drivers list/roster
-          const rosterData = await getDriversList(season);
-          const driversToDisplay = rosterData.drivers || [];
-          
-          // Sort alphabetically when all points are zero
-          const sortedDrivers = sortDriversAlphabetically(driversToDisplay);
-          setDrivers(sortedDrivers);
+        // Check if we're using mock data or if standings are empty or all zero points
+        if (isMock || standingsData.length === 0 || allZeroPoints(standingsData)) {
+          // If mock or empty, try to get drivers list/roster
+          if (standingsData.length === 0) {
+            const rosterData = await getDriversList(season);
+            const driversToDisplay = rosterData.drivers || [];
+            
+            // Sort alphabetically when all points are zero
+            const sortedDrivers = sortDriversAlphabetically(driversToDisplay);
+            setDrivers(sortedDrivers);
+          } else {
+            // Use mock data but sort alphabetically if all zero points
+            if (allZeroPoints(standingsData)) {
+              const sortedDrivers = sortDriversAlphabetically(standingsData);
+              setDrivers(sortedDrivers);
+            } else {
+              setDrivers(standingsData);
+            }
+          }
           setIsFallbackData(true);
         } else {
           // Check if all points are zero and sort alphabetically
