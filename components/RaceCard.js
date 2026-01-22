@@ -80,7 +80,7 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
         {/* Circuit Info */}
         <div className="mb-4">
           <p className="text-sm text-zinc-400 mb-1">
-            📍 {Circuit.circuitName}
+            {Circuit.circuitName}
           </p>
           <p className="text-xs text-zinc-500 uppercase tracking-wider">
             {Circuit.Location.locality}, {Circuit.Location.country}

@@ -43,7 +43,7 @@ export default function CountdownTimer({ targetDate }) {
   if (isExpired) {
     return (
       <div className="text-center p-8 bg-zinc-900/50 rounded-2xl border border-white/10">
-        <p className="text-2xl font-bold text-[#00D2BE]">🏁 Race is Live!</p>
+        <p className="text-2xl font-bold text-[#00D2BE]">Race is Live!</p>
       </div>
     );
   }
