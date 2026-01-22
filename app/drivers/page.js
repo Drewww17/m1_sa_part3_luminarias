@@ -6,26 +6,71 @@ import Navbar from "../../components/Navbar";
 import DriverCard from "../../components/DriverCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getDriverStandings } from "../../lib/api";
+import SeasonSelector from "../../components/SeasonSelector";
+import { getDriverStandings, getDriversList } from "../../lib/api";
+import { allZeroPoints, sortDriversAlphabetically } from "../../lib/utils";
 
 export default function DriversPage() {
   const [loading, setLoading] = useState(true);
   const [drivers, setDrivers] = useState([]);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [season, setSeason] = useState('2026');
+  const [usingFallback, setUsingFallback] = useState(false);
 
+  // Initialize season from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSeason = localStorage.getItem('selectedSeason');
+      if (savedSeason) {
+        setSeason(savedSeason);
+      }
+    }
+  }, []);
+
+  // Load drivers when season changes
   useEffect(() => {
     async function loadDrivers() {
+      setLoading(true);
       try {
-        const data = await getDriverStandings();
-        setDrivers(data);
+        // Try to get standings first
+        const standingsData = await getDriverStandings(season);
+        
+        // If standings are empty, fallback to roster
+        if (!standingsData || standingsData.length === 0) {
+          console.log(`No standings for season ${season}, fetching roster...`);
+          setUsingFallback(true);
+          
+          const rosterData = await getDriversList(season === 'current' ? '2026' : season);
+          
+          // Map roster to standings UI shape
+          const mappedDrivers = rosterData.drivers.map((driver, index) => ({
+            position: (index + 1).toString(),
+            points: '0',
+            wins: '0',
+            Driver: driver,
+            Constructors: [] // No constructor info in roster endpoint
+          }));
+          
+          setDrivers(mappedDrivers);
+        } else {
+          setUsingFallback(false);
+          
+          // Check if all points are zero and sort alphabetically if so
+          if (allZeroPoints(standingsData)) {
+            setDrivers(sortDriversAlphabetically(standingsData));
+          } else {
+            setDrivers(standingsData);
+          }
+        }
       } catch (error) {
         console.error("Failed to load drivers:", error);
+        setDrivers([]);
       } finally {
         setLoading(false);
       }
     }
     loadDrivers();
-  }, []);
+  }, [season]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -52,37 +97,54 @@ export default function DriversPage() {
                   <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Driver Standings
                 </h1>
-                <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
+                <p className="text-zinc-500 ml-8">{season} FIA Formula One World Championship</p>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex gap-2 ml-8 sm:ml-0">
-                <motion.button
-                  onClick={() => setViewMode('cards')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'cards'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cards
-                </motion.button>
-                <motion.button
-                  onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Table
-                </motion.button>
+              {/* Season Selector and View Toggle */}
+              <div className="flex flex-col sm:flex-row gap-2 ml-8 sm:ml-0">
+                <SeasonSelector selectedSeason={season} onSeasonChange={setSeason} />
+                <div className="flex gap-2">
+                  <motion.button
+                    onClick={() => setViewMode('cards')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'cards'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cards
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setViewMode('table')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'table'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Table
+                  </motion.button>
+                </div>
               </div>
             </div>
+
+            {/* Informational Banner */}
+            {usingFallback && (
+              <motion.div
+                className="mb-6 ml-8 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-yellow-500 text-sm">
+                  ℹ️ Official standings for season {season} are not available — showing roster/demo data.
+                </p>
+              </motion.div>
+            )}
 
             {/* Stats Overview */}
             {!loading && drivers.length > 0 && (
