@@ -242,7 +242,7 @@ export default function TeamsPage() {
                 </div>
                 <div>
                   <p className="text-sm mb-2">
-                    <span className="font-bold text-white">Constructor Points:</span> Sum of both drivers' points per race
+                    <span className="font-bold text-white">Constructor Points:</span> Sum of both drivers&apos; points per race
                   </p>
                   <p className="text-sm">
                     <span className="font-bold text-white">Season:</span> {season} FIA Formula One World Championship
