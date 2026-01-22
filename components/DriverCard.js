@@ -61,19 +61,13 @@ export default function DriverCard({ driver, index = 0 }) {
 
         {/* Driver Photo */}
         <div className="flex-shrink-0">
-          {driverImage ? (
-            <Image
-              src={driverImage}
-              alt={driverName}
-              width={64}
-              height={64}
-              className="rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30">
-              <span className="text-sm font-bold text-[#00D2BE]">{Driver.code}</span>
-            </div>
-          )}
+          <Image
+            src={driverImage}
+            alt={driverName}
+            width={64}
+            height={64}
+            className="rounded-full object-cover"
+          />
         </div>
 
         {/* Driver Info */}
