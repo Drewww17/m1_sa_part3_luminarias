@@ -3,8 +3,11 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { getConstructorImage } from "../lib/images";
+import { useState } from "react";
 
 export default function TeamCard({ team, index = 0 }) {
+  const [imageError, setImageError] = useState(false);
+  
   if (!team) return null;
 
   const { Constructor, position, points, wins } = team;
@@ -75,13 +78,14 @@ export default function TeamCard({ team, index = 0 }) {
 
         {/* Team Logo */}
         <div className="flex items-center justify-center mb-4">
-          {teamImage ? (
+          {!imageError ? (
             <Image
               src={teamImage}
               alt={teamName}
               width={80}
               height={80}
               className="object-contain"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-20 h-20 rounded-lg bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30">
