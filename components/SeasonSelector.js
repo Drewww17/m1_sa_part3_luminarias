@@ -8,18 +8,23 @@ import { useState, useEffect } from "react";
  * Persists selection to localStorage
  */
 export default function SeasonSelector({ onSeasonChange, defaultSeason = "current" }) {
-  const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
   const seasons = ["current", "2026", "2025"];
-
-  // Load season from localStorage on mount
-  useEffect(() => {
+  
+  // Initialize state with localStorage value or defaultSeason
+  const [selectedSeason, setSelectedSeason] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedSeason = localStorage.getItem('selectedSeason');
       if (savedSeason && seasons.includes(savedSeason)) {
-        setSelectedSeason(savedSeason);
-        onSeasonChange?.(savedSeason);
+        return savedSeason;
       }
     }
+    return defaultSeason;
+  });
+
+  // Notify parent of initial season on mount
+  useEffect(() => {
+    onSeasonChange?.(selectedSeason);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSeasonChange = (season) => {
