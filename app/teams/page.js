@@ -6,26 +6,52 @@ import Navbar from "../../components/Navbar";
 import TeamCard from "../../components/TeamCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
+import SeasonSelector from "../../components/SeasonSelector";
 import { getConstructorStandings } from "../../lib/api";
+import { allZeroPoints, sortConstructorsAlphabetically } from "../../lib/utils";
 
 export default function TeamsPage() {
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState([]);
   const [viewMode, setViewMode] = useState('cards');
+  const [selectedSeason, setSelectedSeason] = useState('2025');
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     async function loadTeams() {
+      setLoading(true);
       try {
-        const data = await getConstructorStandings();
-        setTeams(data);
+        const standings = await getConstructorStandings(selectedSeason);
+        
+        // Check if standings are empty or all points are zero
+        if (!standings || standings.length === 0) {
+          console.log(`No standings available for ${selectedSeason}, using demo data`);
+          setTeams([]);
+          setUsingFallback(true);
+        } else if (allZeroPoints(standings)) {
+          // All points are zero, alphabetize
+          const sorted = sortConstructorsAlphabetically(standings);
+          // Re-assign positions after sorting
+          const withPositions = sorted.map((item, index) => ({
+            ...item,
+            position: String(index + 1)
+          }));
+          setTeams(withPositions);
+          setUsingFallback(true);
+        } else {
+          setTeams(standings);
+          setUsingFallback(false);
+        }
       } catch (error) {
         console.error("Failed to load teams:", error);
+        setTeams([]);
+        setUsingFallback(true);
       } finally {
         setLoading(false);
       }
     }
     loadTeams();
-  }, []);
+  }, [selectedSeason]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -52,37 +78,57 @@ export default function TeamsPage() {
                   <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Constructor Standings
                 </h1>
-                <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
+                <p className="text-zinc-500 ml-8">{selectedSeason} FIA Formula One World Championship</p>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex gap-2 ml-8 sm:ml-0">
-                <motion.button
-                  onClick={() => setViewMode('cards')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'cards'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cards
-                </motion.button>
-                <motion.button
-                  onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Table
-                </motion.button>
+              {/* Season Selector and View Toggle */}
+              <div className="flex flex-col sm:flex-row gap-2 ml-8 sm:ml-0">
+                <SeasonSelector 
+                  selectedSeason={selectedSeason}
+                  onSeasonChange={setSelectedSeason}
+                />
+                <div className="flex gap-2">
+                  <motion.button
+                    onClick={() => setViewMode('cards')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'cards'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cards
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setViewMode('table')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'table'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Table
+                  </motion.button>
+                </div>
               </div>
             </div>
+
+            {/* Fallback Banner */}
+            {!loading && usingFallback && (
+              <motion.div
+                className="mb-6 ml-8 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-yellow-500 text-sm">
+                  ⚠️ Official standings for season {selectedSeason} are not available — showing roster/demo data.
+                </p>
+              </motion.div>
+            )}
 
             {/* Stats Overview */}
             {!loading && teams.length > 0 && (
@@ -195,7 +241,7 @@ export default function TeamsPage() {
                     <span className="font-bold text-white">Constructor Points:</span> Sum of both drivers' points per race
                   </p>
                   <p className="text-sm">
-                    <span className="font-bold text-white">Season:</span> 2025 FIA Formula One World Championship
+                    <span className="font-bold text-white">Season:</span> {selectedSeason} FIA Formula One World Championship
                   </p>
                 </div>
               </div>

@@ -75,19 +75,13 @@ export default function TeamCard({ team, index = 0 }) {
 
         {/* Team Logo */}
         <div className="flex items-center justify-center mb-4">
-          {teamImage ? (
-            <Image
-              src={teamImage}
-              alt={teamName}
-              width={80}
-              height={80}
-              className="object-contain"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-lg bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30">
-              <span className="text-sm font-bold text-[#00D2BE]">{teamName.substring(0, 3).toUpperCase()}</span>
-            </div>
-          )}
+          <Image
+            src={teamImage}
+            alt={teamName}
+            width={80}
+            height={80}
+            className="object-contain"
+          />
         </div>
 
         {/* Team Name */}
