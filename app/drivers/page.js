@@ -6,26 +6,73 @@ import Navbar from "../../components/Navbar";
 import DriverCard from "../../components/DriverCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getDriverStandings } from "../../lib/api";
+import SeasonSelector from "../../components/SeasonSelector";
+import { getDriverStandings, getDriversList } from "../../lib/api";
+import { allZeroPoints, sortDriversAlphabetically } from "../../lib/utils";
 
 export default function DriversPage() {
   const [loading, setLoading] = useState(true);
   const [drivers, setDrivers] = useState([]);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [season, setSeason] = useState('current');
+  const [isFallbackData, setIsFallbackData] = useState(false);
+
+  // Load season from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSeason = localStorage.getItem('selectedSeason');
+      if (savedSeason) {
+        setSeason(savedSeason);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function loadDrivers() {
+      setLoading(true);
       try {
-        const data = await getDriverStandings();
-        setDrivers(data);
+        // First, try to get official standings
+        const { standings: standingsData, isMock } = await getDriverStandings(season);
+        
+        // Check if we're using mock data or if standings are empty or all zero points
+        if (isMock || standingsData.length === 0 || allZeroPoints(standingsData)) {
+          // If mock or empty, try to get drivers list/roster
+          if (standingsData.length === 0) {
+            const rosterData = await getDriversList(season);
+            const driversToDisplay = rosterData.drivers || [];
+            
+            // Sort alphabetically when all points are zero
+            const sortedDrivers = sortDriversAlphabetically(driversToDisplay);
+            setDrivers(sortedDrivers);
+          } else {
+            // Use mock data but sort alphabetically if all zero points
+            if (allZeroPoints(standingsData)) {
+              const sortedDrivers = sortDriversAlphabetically(standingsData);
+              setDrivers(sortedDrivers);
+            } else {
+              setDrivers(standingsData);
+            }
+          }
+          setIsFallbackData(true);
+        } else {
+          // Check if all points are zero and sort alphabetically
+          if (allZeroPoints(standingsData)) {
+            const sortedDrivers = sortDriversAlphabetically(standingsData);
+            setDrivers(sortedDrivers);
+          } else {
+            setDrivers(standingsData);
+          }
+          setIsFallbackData(false);
+        }
       } catch (error) {
         console.error("Failed to load drivers:", error);
+        setIsFallbackData(true);
       } finally {
         setLoading(false);
       }
     }
     loadDrivers();
-  }, []);
+  }, [season]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -83,6 +130,28 @@ export default function DriversPage() {
                 </motion.button>
               </div>
             </div>
+
+            {/* Season Selector */}
+            <div className="mb-6 ml-8">
+              <SeasonSelector 
+                season={season} 
+                onSeasonChange={setSeason}
+                seasons={['current', '2026', '2025']}
+              />
+            </div>
+
+            {/* Fallback Data Banner */}
+            {isFallbackData && !loading && (
+              <motion.div
+                className="mb-6 ml-8 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p className="text-yellow-300 text-sm">
+                  ⚠️ Official standings for season <span className="font-bold">{season}</span> are not available — showing roster/demo data.
+                </p>
+              </motion.div>
+            )}
 
             {/* Stats Overview */}
             {!loading && drivers.length > 0 && (

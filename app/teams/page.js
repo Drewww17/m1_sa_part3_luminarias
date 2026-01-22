@@ -6,26 +6,69 @@ import Navbar from "../../components/Navbar";
 import TeamCard from "../../components/TeamCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
+import SeasonSelector from "../../components/SeasonSelector";
 import { getConstructorStandings } from "../../lib/api";
+import { allZeroPoints, sortConstructorsAlphabetically } from "../../lib/utils";
 
 export default function TeamsPage() {
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState([]);
   const [viewMode, setViewMode] = useState('cards');
+  const [season, setSeason] = useState('current');
+  const [isFallbackData, setIsFallbackData] = useState(false);
+
+  // Load season from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSeason = localStorage.getItem('selectedSeason');
+      if (savedSeason) {
+        setSeason(savedSeason);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     async function loadTeams() {
+      setLoading(true);
       try {
-        const data = await getConstructorStandings();
-        setTeams(data);
+        const { standings: standingsData, isMock } = await getConstructorStandings(season);
+        
+        // Check if we're using mock data or if standings are empty or all zero points
+        if (isMock || standingsData.length === 0 || allZeroPoints(standingsData)) {
+          // For constructors, we use the mock data that's already returned
+          const teamsToDisplay = standingsData.length > 0 ? standingsData : [];
+          
+          // Sort alphabetically when all points are zero
+          if (teamsToDisplay.length > 0) {
+            if (allZeroPoints(teamsToDisplay)) {
+              const sortedTeams = sortConstructorsAlphabetically(teamsToDisplay);
+              setTeams(sortedTeams);
+            } else {
+              setTeams(teamsToDisplay);
+            }
+          } else {
+            setTeams([]);
+          }
+          setIsFallbackData(true);
+        } else {
+          // Check if all points are zero and sort alphabetically
+          if (allZeroPoints(standingsData)) {
+            const sortedTeams = sortConstructorsAlphabetically(standingsData);
+            setTeams(sortedTeams);
+          } else {
+            setTeams(standingsData);
+          }
+          setIsFallbackData(false);
+        }
       } catch (error) {
         console.error("Failed to load teams:", error);
+        setIsFallbackData(true);
       } finally {
         setLoading(false);
       }
     }
     loadTeams();
-  }, []);
+  }, [season]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -83,6 +126,28 @@ export default function TeamsPage() {
                 </motion.button>
               </div>
             </div>
+
+            {/* Season Selector */}
+            <div className="mb-6 ml-8">
+              <SeasonSelector 
+                season={season} 
+                onSeasonChange={setSeason}
+                seasons={['current', '2026', '2025']}
+              />
+            </div>
+
+            {/* Fallback Data Banner */}
+            {isFallbackData && !loading && (
+              <motion.div
+                className="mb-6 ml-8 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p className="text-yellow-300 text-sm">
+                  ⚠️ Official standings for season <span className="font-bold">{season}</span> are not available — showing roster/demo data.
+                </p>
+              </motion.div>
+            )}
 
             {/* Stats Overview */}
             {!loading && teams.length > 0 && (

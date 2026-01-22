@@ -28,12 +28,12 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [drivers, nextRace] = await Promise.all([
+        const [driverData, nextRace] = await Promise.all([
           getDriverStandings(),
           getNextRace()
         ]);
 
-        setData({ drivers, nextRace });
+        setData({ drivers: driverData.standings || driverData, nextRace });
       } catch (error) {
         console.warn("API Error, using demo data:", error);
         setData({
