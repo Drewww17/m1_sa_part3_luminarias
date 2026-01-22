@@ -1,0 +1,13 @@
+TODO: Add fallback.webp image for teams without logos
+
+This placeholder file indicates that a fallback.webp image should be placed in this directory.
+The image will be used when a team's logo is not available in the system.
+
+Recommended specifications:
+- Format: WebP
+- Dimensions: 256x256 pixels or similar square format
+- Content: Generic F1 team logo placeholder or icon
+- File name: fallback.webp
+
+Until the actual image is added, the application will reference /teams/fallback.webp
+and may show a broken image icon or use the component's fallback rendering logic.

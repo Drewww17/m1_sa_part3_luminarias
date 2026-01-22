@@ -1,0 +1,13 @@
+TODO: Add fallback.webp image for drivers without photos
+
+This placeholder file indicates that a fallback.webp image should be placed in this directory.
+The image will be used when a driver's photo is not available in the system.
+
+Recommended specifications:
+- Format: WebP
+- Dimensions: 128x128 pixels or similar square format
+- Content: Generic F1 driver silhouette or placeholder icon
+- File name: fallback.webp
+
+Until the actual image is added, the application will reference /drivers/fallback.webp
+and may show a broken image icon or use the component's fallback rendering logic.
