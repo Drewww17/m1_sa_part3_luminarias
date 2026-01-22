@@ -1,0 +1,27 @@
+"use client";
+
+import { motion } from "framer-motion";
+
+const SEASONS = ['2026', '2025'];
+
+export default function SeasonSelector({ selectedSeason, onSeasonChange }) {
+  return (
+    <div className="flex gap-2">
+      {SEASONS.map((season) => (
+        <motion.button
+          key={season}
+          onClick={() => onSeasonChange(season)}
+          className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+            selectedSeason === season
+              ? 'bg-[#00D2BE] text-black'
+              : 'bg-zinc-900 text-zinc-500 hover:text-white'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {season}
+        </motion.button>
+      ))}
+    </div>
+  );
+}
