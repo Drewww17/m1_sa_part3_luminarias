@@ -6,26 +6,73 @@ import Navbar from "../../components/Navbar";
 import DriverCard from "../../components/DriverCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getDriverStandings } from "../../lib/api";
+import SeasonSelector from "../../components/SeasonSelector";
+import { getDriverStandings, getDriversList } from "../../lib/api";
+import { allZeroPoints, sortDriversAlphabetically } from "../../lib/utils";
 
 export default function DriversPage() {
   const [loading, setLoading] = useState(true);
   const [drivers, setDrivers] = useState([]);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [season, setSeason] = useState('2026');
+  const [isMockData, setIsMockData] = useState(false);
+
+  useEffect(() => {
+    // Load season from localStorage
+    const savedSeason = localStorage.getItem('selectedSeason');
+    if (savedSeason) {
+      setSeason(savedSeason);
+    }
+  }, []);
 
   useEffect(() => {
     async function loadDrivers() {
+      setLoading(true);
       try {
-        const data = await getDriverStandings();
-        setDrivers(data);
+        // Try to get driver standings first
+        const standings = await getDriverStandings(season);
+        
+        // If standings are empty or all zero points, try to get roster
+        if (!standings || standings.length === 0) {
+          const rosterData = await getDriversList(season);
+          if (rosterData.drivers && rosterData.drivers.length > 0) {
+            // Map roster to standings format
+            const rosterStandings = rosterData.drivers.map((driver, index) => ({
+              position: String(index + 1),
+              points: '0',
+              wins: '0',
+              Driver: driver,
+              Constructors: [{ constructorId: 'unknown', name: 'TBD', nationality: 'Unknown' }]
+            }));
+            setDrivers(sortDriversAlphabetically(rosterStandings));
+            setIsMockData(true);
+          } else {
+            setDrivers([]);
+            setIsMockData(true);
+          }
+        } else if (allZeroPoints(standings)) {
+          // All points are zero, alphabetize
+          setDrivers(sortDriversAlphabetically(standings));
+          setIsMockData(true);
+        } else {
+          setDrivers(standings);
+          setIsMockData(false);
+        }
       } catch (error) {
         console.error("Failed to load drivers:", error);
+        setDrivers([]);
+        setIsMockData(true);
       } finally {
         setLoading(false);
       }
     }
     loadDrivers();
-  }, []);
+  }, [season]);
+
+  const handleSeasonChange = (newSeason) => {
+    setSeason(newSeason);
+    localStorage.setItem('selectedSeason', newSeason);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -52,37 +99,55 @@ export default function DriversPage() {
                   <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Driver Standings
                 </h1>
-                <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
+                <p className="text-zinc-500 ml-8">{season} FIA Formula One World Championship</p>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex gap-2 ml-8 sm:ml-0">
-                <motion.button
-                  onClick={() => setViewMode('cards')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'cards'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cards
-                </motion.button>
-                <motion.button
-                  onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Table
-                </motion.button>
+              <div className="flex flex-col sm:flex-row gap-2 ml-8 sm:ml-0">
+                {/* Season Selector */}
+                <SeasonSelector selectedSeason={season} onSeasonChange={handleSeasonChange} />
+                
+                {/* View Toggle */}
+                <div className="flex gap-2">
+                  <motion.button
+                    onClick={() => setViewMode('cards')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'cards'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cards
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setViewMode('table')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'table'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Table
+                  </motion.button>
+                </div>
               </div>
             </div>
+
+            {/* Mock Data Banner */}
+            {isMockData && drivers.length > 0 && (
+              <motion.div
+                className="mb-4 ml-8 p-3 bg-yellow-900/30 border border-yellow-700/50 rounded-lg"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p className="text-sm text-yellow-200">
+                  ⚠️ Official standings for season {season} are not available — showing roster/demo data.
+                </p>
+              </motion.div>
+            )}
 
             {/* Stats Overview */}
             {!loading && drivers.length > 0 && (
