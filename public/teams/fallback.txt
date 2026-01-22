@@ -1,0 +1,3 @@
+TODO: Add fallback.webp image here
+This is a placeholder for the constructor/team fallback image.
+A generic F1 car or team logo placeholder should be placed here.

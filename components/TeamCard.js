@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useState } from "react";
 import { getConstructorImage } from "../lib/images";
 
 export default function TeamCard({ team, index = 0 }) {
@@ -10,6 +11,7 @@ export default function TeamCard({ team, index = 0 }) {
   const { Constructor, position, points, wins } = team;
   const teamName = Constructor.name;
   const teamImage = getConstructorImage(Constructor.constructorId);
+  const [imageError, setImageError] = useState(false);
 
   // Team color mapping
   const teamColors = {
@@ -75,13 +77,14 @@ export default function TeamCard({ team, index = 0 }) {
 
         {/* Team Logo */}
         <div className="flex items-center justify-center mb-4">
-          {teamImage ? (
+          {teamImage && !imageError ? (
             <Image
               src={teamImage}
               alt={teamName}
               width={80}
               height={80}
               className="object-contain"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-20 h-20 rounded-lg bg-zinc-800 flex items-center justify-center border-2 border-[#00D2BE]/30">
