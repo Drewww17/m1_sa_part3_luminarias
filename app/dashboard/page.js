@@ -214,7 +214,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.02 }}
               >
                 <p className="text-xs font-bold uppercase tracking-widest mb-2 border-b-2 border-black/20 pb-2">
-                  🏆 Race Winner
+                  Race Winner
                 </p>
                 <div className="flex items-center gap-4 mb-3">
                   {getDriverImage(mockLastRaceResults.results[0].Driver.driverId) && (
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.02 }}
               >
                 <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
-                  ⚡ Pole Position
+                  Pole Position
                 </p>
                 <h3 className="text-xl font-black italic uppercase text-[#00D2BE] mb-1">
                   {mockLastRaceResults.polePosition.Driver.familyName}
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.02 }}
               >
                 <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
-                  🚀 Fastest Lap
+                  Fastest Lap
                 </p>
                 <h3 className="text-xl font-black italic uppercase text-purple-400 mb-1">
                   {mockLastRaceResults.fastestLap.Driver.familyName}

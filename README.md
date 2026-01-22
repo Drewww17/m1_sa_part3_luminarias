@@ -2,9 +2,9 @@
 
 A modern, feature-rich Formula 1 dashboard website built with Next.js, featuring live race data, driver standings, team information, and race schedules with stunning animations and a dark racing aesthetic.
 
-## 🏎️ Features
+## Features
 
-### 🎬 Animated Splash Screen
+### Animated Splash Screen
 - Full-screen cinematic intro with F1-themed animations
 - Smooth transitions using Framer Motion
 - Progress indicator and loading effects
@@ -15,13 +15,13 @@ A modern, feature-rich Formula 1 dashboard website built with Next.js, featuring
 - **Live Updates**: Real-time data from Ergast F1 API
 - **Championship Leader**: Highlighted stats for the current leader
 
-### 👨‍✈️ Driver Standings Page
+### Driver Standings Page
 - Complete driver championship standings
 - Toggle between card and table views
 - Statistics overview (total drivers, leader, points)
 - Team affiliations and nationality info
 
-### 🏁 Constructor Standings Page
+### Constructor Standings Page
 - Full constructor/team championship standings
 - Visual team cards with brand colors
 - Detailed point system information
@@ -34,7 +34,7 @@ A modern, feature-rich Formula 1 dashboard website built with Next.js, featuring
 - Circuit information and locations
 - Next race highlighted
 
-### 🎨 Design Features
+### Design Features
 - Dark racing aesthetic with neon accents (#ccff00)
 - Smooth animations and transitions with Framer Motion
 - Responsive design (mobile, tablet, desktop)
@@ -43,7 +43,7 @@ A modern, feature-rich Formula 1 dashboard website built with Next.js, featuring
 - Live ticker with breaking news
 - Loading skeletons for better UX
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Framework**: Next.js 16.1.4 (React 19.2.3)
 - **Styling**: Tailwind CSS 4
@@ -69,7 +69,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 /app
@@ -119,7 +119,7 @@ getLastRaceResults(season)      // Get most recent race results
 
 API responses are cached in memory for 5 minutes to improve performance and reduce API calls.
 
-## 🎯 Available Scripts
+## Available Scripts
 
 ```bash
 npm run dev      # Start development server (http://localhost:3000)
@@ -150,14 +150,14 @@ This Next.js app can be deployed to any platform that supports Node.js:
 - Render
 - AWS Amplify
 
-## 📱 Responsive Design
+## Responsive Design
 
 The dashboard is fully responsive with breakpoints for:
 - **Mobile**: < 640px
 - **Tablet**: 640px - 1024px
 - **Desktop**: > 1024px
 
-## 🎨 Color Palette
+## Color Palette
 
 - **Primary**: #ccff00 (Neon Yellow/Lime)
 - **Background**: #0a0a0a (Deep Black)
@@ -165,7 +165,7 @@ The dashboard is fully responsive with breakpoints for:
 - **Text**: #ffffff (White)
 - **Accent**: Various gradient effects
 
-## 🔧 Customization
+## Customization
 
 ### Changing Theme Colors
 
@@ -223,4 +223,4 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-Built with ❤️ for F1 fans by F1 fans
+Built with love for F1 fans by F1 fans
