@@ -6,17 +6,32 @@ import Navbar from "../../components/Navbar";
 import TeamCard from "../../components/TeamCard";
 import StandingsTable from "../../components/StandingsTable";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getConstructorStandings } from "../../lib/api";
+import { getConstructorStandings, getSeasonsList } from "../../lib/api";
 
 export default function TeamsPage() {
   const [loading, setLoading] = useState(true);
   const [teams, setTeams] = useState([]);
   const [viewMode, setViewMode] = useState('cards');
+  const [selectedSeason, setSelectedSeason] = useState('current');
+  const [seasons, setSeasons] = useState([]);
+
+  useEffect(() => {
+    async function loadSeasons() {
+      try {
+        const list = await getSeasonsList();
+        setSeasons(list);
+      } catch (err) {
+        console.error("Failed to load seasons:", err);
+      }
+    }
+    loadSeasons();
+  }, []);
 
   useEffect(() => {
     async function loadTeams() {
+      setLoading(true);
       try {
-        const data = await getConstructorStandings();
+        const data = await getConstructorStandings(selectedSeason);
         setTeams(data);
       } catch (error) {
         console.error("Failed to load teams:", error);
@@ -25,7 +40,7 @@ export default function TeamsPage() {
       }
     }
     loadTeams();
-  }, []);
+  }, [selectedSeason]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -52,37 +67,53 @@ export default function TeamsPage() {
                   <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Constructor Standings
                 </h1>
-                <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
+                <p className="text-zinc-500 ml-8">
+                  {selectedSeason === 'current' ? '2025' : selectedSeason} FIA Formula One World Championship
+                </p>
               </div>
 
-              {/* View Toggle */}
-              <div className="flex gap-2 ml-8 sm:ml-0">
-                <motion.button
-                  onClick={() => setViewMode('cards')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'cards'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+              {/* Controls */}
+              <div className="flex flex-wrap items-center gap-3 ml-8 sm:ml-0">
+                <select
+                  value={selectedSeason}
+                  onChange={(e) => setSelectedSeason(e.target.value)}
+                  className="bg-zinc-900 border border-white/20 text-white font-mono text-xs rounded-lg px-3 py-2 cursor-pointer focus:border-[#00D2BE] focus:outline-none"
                 >
-                  Cards
-                </motion.button>
-                <motion.button
-                  onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-[#00D2BE] text-black'
-                      : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Table
-                </motion.button>
+                  <option value="current">Current Season (2025)</option>
+                  {seasons.map(s => (
+                    <option key={s} value={s}>{s} Season</option>
+                  ))}
+                </select>
+
+                <div className="flex gap-2">
+                  <motion.button
+                    onClick={() => setViewMode('cards')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'cards'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cards
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setViewMode('table')}
+                    className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-wider transition-all ${
+                      viewMode === 'table'
+                        ? 'bg-[#00D2BE] text-black'
+                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Table
+                  </motion.button>
+                </div>
               </div>
             </div>
+
 
             {/* Stats Overview */}
             {!loading && teams.length > 0 && (

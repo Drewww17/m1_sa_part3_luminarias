@@ -5,20 +5,35 @@ import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar";
 import RaceCard from "../../components/RaceCard";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getRaceSchedule, getNextRace } from "../../lib/api";
+import { getRaceSchedule, getNextRace, getSeasonsList } from "../../lib/api";
 
 export default function SchedulePage() {
   const [loading, setLoading] = useState(true);
   const [races, setRaces] = useState([]);
   const [nextRace, setNextRace] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all', 'upcoming', 'completed'
+  const [selectedSeason, setSelectedSeason] = useState('current');
+  const [seasons, setSeasons] = useState([]);
+
+  useEffect(() => {
+    async function loadSeasons() {
+      try {
+        const list = await getSeasonsList();
+        setSeasons(list);
+      } catch (err) {
+        console.error("Failed to load seasons:", err);
+      }
+    }
+    loadSeasons();
+  }, []);
 
   useEffect(() => {
     async function loadSchedule() {
+      setLoading(true);
       try {
         const [raceSchedule, upcomingRace] = await Promise.all([
-          getRaceSchedule(),
-          getNextRace()
+          getRaceSchedule(selectedSeason),
+          getNextRace(selectedSeason)
         ]);
         setRaces(raceSchedule);
         setNextRace(upcomingRace);
@@ -29,7 +44,8 @@ export default function SchedulePage() {
       }
     }
     loadSchedule();
-  }, []);
+  }, [selectedSeason]);
+
 
   const filteredRaces = races.filter(race => {
     if (filter === 'all') return true;
@@ -75,28 +91,44 @@ export default function SchedulePage() {
                   <span className="w-4 h-12 bg-[#00D2BE] rounded-sm"></span>
                   Race Calendar
                 </h1>
-                <p className="text-zinc-500 ml-8">2025 FIA Formula One World Championship</p>
+                <p className="text-zinc-500 ml-8">
+                  {selectedSeason === 'current' ? '2025' : selectedSeason} FIA Formula One World Championship
+                </p>
               </div>
 
-              {/* Filter Buttons */}
-              <div className="flex gap-2 ml-8 sm:ml-0 flex-wrap">
-                {['all', 'upcoming', 'completed'].map((filterType) => (
-                  <motion.button
-                    key={filterType}
-                    onClick={() => setFilter(filterType)}
-                    className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${
-                      filter === filterType
-                        ? 'bg-[#00D2BE] text-black'
-                        : 'bg-zinc-900 text-zinc-500 hover:text-white'
-                    }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {filterType}
-                  </motion.button>
-                ))}
+              {/* Controls */}
+              <div className="flex flex-wrap items-center gap-3 ml-8 sm:ml-0">
+                <select
+                  value={selectedSeason}
+                  onChange={(e) => setSelectedSeason(e.target.value)}
+                  className="bg-zinc-900 border border-white/20 text-white font-mono text-xs rounded-lg px-3 py-2 cursor-pointer focus:border-[#00D2BE] focus:outline-none"
+                >
+                  <option value="current">Current Season (2025)</option>
+                  {seasons.map(s => (
+                    <option key={s} value={s}>{s} Season</option>
+                  ))}
+                </select>
+
+                <div className="flex gap-2 flex-wrap">
+                  {['all', 'upcoming', 'completed'].map((filterType) => (
+                    <motion.button
+                      key={filterType}
+                      onClick={() => setFilter(filterType)}
+                      className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${
+                        filter === filterType
+                          ? 'bg-[#00D2BE] text-black'
+                          : 'bg-zinc-900 text-zinc-500 hover:text-white'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {filterType}
+                    </motion.button>
+                  ))}
+                </div>
               </div>
             </div>
+
 
             {/* Stats Overview */}
             {!loading && (

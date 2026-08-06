@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import CircuitMap from "./CircuitMap";
+
 
 export default function RaceCard({ race, index = 0, isUpcoming = false }) {
   if (!race) return null;
@@ -82,10 +84,13 @@ export default function RaceCard({ race, index = 0, isUpcoming = false }) {
           <p className="text-sm text-zinc-400 mb-1">
             {Circuit.circuitName}
           </p>
-          <p className="text-xs text-zinc-500 uppercase tracking-wider">
+          <p className="text-xs text-zinc-500 uppercase tracking-wider mb-3">
             {Circuit.Location.locality}, {Circuit.Location.country}
           </p>
+
+          <CircuitMap circuitId={Circuit.circuitId} circuitName={Circuit.circuitName} />
         </div>
+
 
         {/* Date and Time */}
         <div className="flex items-center justify-between pt-4 border-t border-white/10">

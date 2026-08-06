@@ -7,54 +7,35 @@ import Navbar from "../../components/Navbar";
 import DriverCard from "../../components/DriverCard";
 import CountdownTimer from "../../components/CountdownTimer";
 import LoadingSkeleton from "../../components/LoadingSkeleton";
-import { getDriverStandings, getNextRace } from "../../lib/api";
-import { mockLastRaceResults } from "../../lib/mockData";
+import TelemetryHUD from "../../components/TelemetryHUD";
+import { getDriverStandings, getNextRace, getLastRaceResults, getLiveTrackWeather } from "../../lib/api";
 import { getDriverImage } from "../../lib/images";
 
-// Fallback data for demo
-const DEMO_DRIVERS = [
-  { position: "1", points: "86", wins: "3", Driver: { code: "VER", givenName: "Max", familyName: "Verstappen", permanentNumber: "1", nationality: "Dutch" }, Constructors: [{ name: "Red Bull Racing" }] },
-  { position: "2", points: "71", wins: "2", Driver: { code: "PER", givenName: "Sergio", familyName: "Perez", permanentNumber: "11", nationality: "Mexican" }, Constructors: [{ name: "Red Bull Racing" }] },
-  { position: "3", points: "65", wins: "1", Driver: { code: "ALO", givenName: "Fernando", familyName: "Alonso", permanentNumber: "14", nationality: "Spanish" }, Constructors: [{ name: "Aston Martin" }] },
-  { position: "4", points: "54", wins: "1", Driver: { code: "HAM", givenName: "Lewis", familyName: "Hamilton", permanentNumber: "44", nationality: "British" }, Constructors: [{ name: "Mercedes" }] },
-  { position: "5", points: "48", wins: "0", Driver: { code: "SAI", givenName: "Carlos", familyName: "Sainz", permanentNumber: "55", nationality: "Spanish" }, Constructors: [{ name: "Ferrari" }] },
-  { position: "6", points: "42", wins: "0", Driver: { code: "NOR", givenName: "Lando", familyName: "Norris", permanentNumber: "4", nationality: "British" }, Constructors: [{ name: "McLaren" }] },
-];
-
 export default function DashboardPage() {
+
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({ drivers: [], nextRace: null });
+  const [data, setData] = useState({ drivers: [], nextRace: null, lastRace: null, weather: null });
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [drivers, nextRace] = await Promise.all([
+        const [drivers, nextRace, lastRace, weather] = await Promise.all([
           getDriverStandings(),
-          getNextRace()
+          getNextRace(),
+          getLastRaceResults(),
+          getLiveTrackWeather()
         ]);
 
-        setData({ drivers, nextRace });
+        setData({ drivers, nextRace, lastRace, weather });
       } catch (error) {
-        console.warn("API Error, using demo data:", error);
-        setData({
-          drivers: DEMO_DRIVERS,
-          nextRace: {
-            raceName: "Monaco Grand Prix",
-            round: "6",
-            date: "2025-05-25",
-            time: "13:00:00Z",
-            Circuit: {
-              circuitName: "Circuit de Monaco",
-              Location: { country: "Monaco", locality: "Monte Carlo" }
-            }
-          }
-        });
+        console.error("API Error fetching dashboard live data:", error);
       } finally {
         setLoading(false);
       }
     }
     loadData();
   }, []);
+
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#00D2BE] selection:text-black">
@@ -195,134 +176,172 @@ export default function DashboardPage() {
             </motion.section>
           )}
 
-          {/* Last Race Results - Abu Dhabi GP */}
+          {/* Telemetry HUD Section */}
           <motion.section
             className="mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
+            transition={{ duration: 0.5, delay: 0.22 }}
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-              <span className="w-3 h-8 bg-[#00D2BE] rounded-sm"></span>
-              Last Race - {mockLastRaceResults.race.raceName}
-            </h2>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Race Winner Card */}
-              <motion.div
-                className="bg-gradient-to-br from-[#00D2BE] to-green-400 rounded-2xl p-6 text-black"
-                whileHover={{ scale: 1.02 }}
-              >
-                <p className="text-xs font-bold uppercase tracking-widest mb-2 border-b-2 border-black/20 pb-2">
-                  Race Winner
-                </p>
-                <div className="flex items-center gap-4 mb-3">
-                  {getDriverImage(mockLastRaceResults.results[0].Driver.driverId) && (
-                    <Image
-                      src={getDriverImage(mockLastRaceResults.results[0].Driver.driverId)}
-                      alt={mockLastRaceResults.results[0].Driver.familyName}
-                      width={64}
-                      height={64}
-                      className="rounded-full object-cover"
-                    />
-                  )}
-                  <div>
-                    <h3 className="text-2xl font-black italic uppercase">
-                      {mockLastRaceResults.results[0].Driver.familyName}
-                    </h3>
-                    <p className="text-sm font-bold opacity-80">
-                      {mockLastRaceResults.results[0].Constructor.name}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-3xl font-black font-mono">
-                    {mockLastRaceResults.results[0].Time.time}
-                  </span>
-                </div>
-              </motion.div>
+            <TelemetryHUD />
+          </motion.section>
 
-              {/* Pole Position Card */}
-              <motion.div
-                className="bg-zinc-900 border border-white/10 rounded-2xl p-6"
-                whileHover={{ scale: 1.02 }}
-              >
-                <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
-                  Pole Position
-                </p>
-                <h3 className="text-xl font-black italic uppercase text-[#00D2BE] mb-1">
-                  {mockLastRaceResults.polePosition.Driver.familyName}
-                </h3>
-                <p className="text-sm text-zinc-400 mb-3">Qualifying</p>
-                <div className="text-right">
-                  <span className="text-2xl font-black font-mono text-white">
-                    {mockLastRaceResults.polePosition.time}
-                  </span>
-                </div>
-              </motion.div>
+          {/* Last Race Results */}
 
-              {/* Fastest Lap Card */}
-              <motion.div
-                className="bg-zinc-900 border border-white/10 rounded-2xl p-6"
-                whileHover={{ scale: 1.02 }}
-              >
-                <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
-                  Fastest Lap
-                </p>
-                <h3 className="text-xl font-black italic uppercase text-purple-400 mb-1">
-                  {mockLastRaceResults.fastestLap.Driver.familyName}
-                </h3>
-                <p className="text-sm text-zinc-400 mb-3">Lap {mockLastRaceResults.fastestLap.lap}</p>
-                <div className="text-right">
-                  <span className="text-2xl font-black font-mono text-white">
-                    {mockLastRaceResults.fastestLap.time}
-                  </span>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Top 10 Results */}
-            <div className="mt-6 bg-zinc-900/50 border border-white/5 rounded-2xl p-6">
-              <h3 className="text-lg font-bold mb-4">Top 10 Finishers</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {mockLastRaceResults.results.map((result, index) => (
+          {data.lastRace?.race && data.lastRace?.results?.length > 0 && (
+            <motion.section
+              className="mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+            >
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span className="w-3 h-8 bg-[#00D2BE] rounded-sm"></span>
+                Last Race - {data.lastRace.race.raceName}
+              </h2>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Race Winner Card */}
+                {data.lastRace.results[0] && (
                   <motion.div
-                    key={result.position}
-                    className="flex items-center gap-3 bg-zinc-900 rounded-lg p-3 border border-white/5 hover:border-[#00D2BE]/30 transition-colors"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    className="bg-gradient-to-br from-[#00D2BE] to-green-400 rounded-2xl p-6 text-black"
+                    whileHover={{ scale: 1.02 }}
                   >
-                    <div className={`text-2xl font-black italic ${
-                      result.position === '1' ? 'text-[#00D2BE]' :
-                      result.position === '2' ? 'text-zinc-300' :
-                      result.position === '3' ? 'text-orange-400' :
-                      'text-zinc-500'
-                    }`}>
-                      {result.position}
-                    </div>
-                    {getDriverImage(result.Driver.driverId) && (
-                      <Image
-                        src={getDriverImage(result.Driver.driverId)}
-                        alt={result.Driver.familyName}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover"
-                      />
-                    )}
-                    <div className="flex-1">
-                      <p className="font-bold text-sm">{result.Driver.familyName}</p>
-                      <p className="text-xs text-zinc-500">{result.Constructor.name}</p>
+                    <p className="text-xs font-bold uppercase tracking-widest mb-2 border-b-2 border-black/20 pb-2">
+                      Race Winner
+                    </p>
+                    <div className="flex items-center gap-4 mb-3">
+                      {getDriverImage(data.lastRace.results[0].Driver?.driverId) && (
+                        <Image
+                          src={getDriverImage(data.lastRace.results[0].Driver?.driverId)}
+                          alt={data.lastRace.results[0].Driver?.familyName || 'Driver'}
+                          width={64}
+                          height={64}
+                          className="rounded-full object-cover"
+                        />
+                      )}
+                      <div>
+                        <h3 className="text-2xl font-black italic uppercase">
+                          {data.lastRace.results[0].Driver?.givenName} {data.lastRace.results[0].Driver?.familyName}
+                        </h3>
+                        <p className="text-sm font-bold opacity-80">
+                          {data.lastRace.results[0].Constructor?.name}
+                        </p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-mono text-sm font-bold">{result.Time.time}</p>
-                      <p className="text-xs text-[#00D2BE]">{result.points} pts</p>
+                      <span className="text-3xl font-black font-mono">
+                        {data.lastRace.results[0].Time?.time || `${data.lastRace.results[0].laps} Laps`}
+                      </span>
                     </div>
                   </motion.div>
-                ))}
+                )}
+
+                {/* Pole Position / Grid Leader */}
+                {data.lastRace.results[0] && (
+                  <motion.div
+                    className="bg-zinc-900 border border-white/10 rounded-2xl p-6"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
+                      Grid Position 1
+                    </p>
+                    <h3 className="text-xl font-black italic uppercase text-[#00D2BE] mb-1">
+                      {data.lastRace.results[0].Driver?.familyName}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-3">P1 Start</p>
+                    <div className="text-right">
+                      <span className="text-2xl font-black font-mono text-white">
+                        {data.lastRace.results[0].points} PTS
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Fastest Lap */}
+                {data.lastRace.results.find(r => r.FastestLap) ? (
+                  (() => {
+                    const fl = data.lastRace.results.find(r => r.FastestLap);
+                    return (
+                      <motion.div
+                        className="bg-zinc-900 border border-white/10 rounded-2xl p-6"
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
+                          Fastest Lap
+                        </p>
+                        <h3 className="text-xl font-black italic uppercase text-purple-400 mb-1">
+                          {fl.Driver?.familyName}
+                        </h3>
+                        <p className="text-sm text-zinc-400 mb-3">Lap {fl.FastestLap?.lap}</p>
+                        <div className="text-right">
+                          <span className="text-2xl font-black font-mono text-white">
+                            {fl.FastestLap?.Time?.time}
+                          </span>
+                        </div>
+                      </motion.div>
+                    );
+                  })()
+                ) : (
+                  <motion.div
+                    className="bg-zinc-900 border border-white/10 rounded-2xl p-6"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest mb-2 border-b border-white/10 pb-2">
+                      Round Status
+                    </p>
+                    <h3 className="text-xl font-black italic uppercase text-purple-400 mb-1">
+                      Completed
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-3">Official Standings Updated</p>
+                  </motion.div>
+                )}
               </div>
-            </div>
-          </motion.section>
+
+              {/* Top 10 Results */}
+              <div className="mt-6 bg-zinc-900/50 border border-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-bold mb-4">Race Finishers</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {data.lastRace.results.slice(0, 10).map((result, index) => (
+                    <motion.div
+                      key={result.position || index}
+                      className="flex items-center gap-3 bg-zinc-900 rounded-lg p-3 border border-white/5 hover:border-[#00D2BE]/30 transition-colors"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <div className={`text-2xl font-black italic ${
+                        result.position === '1' ? 'text-[#00D2BE]' :
+                        result.position === '2' ? 'text-zinc-300' :
+                        result.position === '3' ? 'text-orange-400' :
+                        'text-zinc-500'
+                      }`}>
+                        {result.position}
+                      </div>
+                      {getDriverImage(result.Driver?.driverId) && (
+                        <Image
+                          src={getDriverImage(result.Driver?.driverId)}
+                          alt={result.Driver?.familyName || 'Driver'}
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <p className="font-bold text-sm">{result.Driver?.givenName} {result.Driver?.familyName}</p>
+                        <p className="text-xs text-zinc-500">{result.Constructor?.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-mono text-sm font-bold">{result.Time?.time || result.status}</p>
+                        <p className="text-xs text-[#00D2BE]">{result.points} pts</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.section>
+          )}
+
 
           {/* Driver Standings */}
           <motion.section
